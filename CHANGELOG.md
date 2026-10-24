@@ -9,6 +9,7 @@ Releases are cut by the **Bump version** GitHub Actions workflow, which moves th
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-24
 ### Added
 
 - `bls data` / `bls latest`: fetch observations for any number of series with
