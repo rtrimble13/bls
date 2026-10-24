@@ -22,9 +22,10 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+          cache-dependency-glob: pyproject.toml
       - name: Install
         run: |
-          uv venv
+          uv venv --clear
           uv pip install -e ".[dev]"
       - name: Ruff (lint)
         run: uv run ruff check src tests
@@ -47,10 +48,13 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+          cache-dependency-glob: pyproject.toml
           python-version: ${{ matrix.python-version }}
       - name: Install
+        # setup-uv with python-version already creates and activates .venv;
+        # --clear makes this step work whether or not that happened.
         run: |
-          uv venv --python ${{ matrix.python-version }}
+          uv venv --clear --python ${{ matrix.python-version }}
           uv pip install -e ".[dev]"
       - name: Pytest
         run: uv run pytest --cov --cov-report=term-missing --cov-report=xml
