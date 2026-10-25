@@ -51,3 +51,11 @@ bls latest CUUR0000SA0L1E --calculations --format json  # value, pct_change_12
 Report the `period_name`/`year`, `value` and `pct_change_12` from the result.
 Prefer not-seasonally-adjusted (`NSA`) series for year-over-year changes and
 seasonally adjusted (`SA`) for month-over-month.
+
+## Reference
+
+For anything beyond a single lookup (derived measures such as real wages or
+state rankings, choosing between candidate series, revisions and release lags,
+the answer template), follow
+[`docs/practitioners-guide.md`](../../docs/practitioners-guide.md), especially
+section 7 (agent protocol) and section 8 (question playbook).

@@ -8,6 +8,13 @@ Releases are cut by the **Bump version** GitHub Actions workflow, which moves th
 *Unreleased* section below under the new version heading.
 
 ## [Unreleased]
+### Added
+
+- `docs/practitioners-guide.md`: what `bls` can answer and how; a research
+  workflow, series discovery tactics, analysis recipes (inflation, jobs, real
+  wages, state rankings, monitoring), guidance on interpreting BLS data, an
+  agent protocol and a question playbook. Linked from the README, the agent
+  contract and the example skill.
 
 ## [0.1.0] - 2026-10-24
 ### Added

@@ -199,11 +199,14 @@ See [docs/python-api.md](docs/python-api.md).
 agent skills. [docs/agents.md](docs/agents.md) is a compact contract
 (commands, flags, output schema, exit codes, request-budget guidance) that a
 skill can reference, and [examples/skill/SKILL.md](examples/skill/SKILL.md) is
-a ready-made skill. [examples/github-actions/](examples/github-actions/)
+a ready-made skill. [docs/practitioners-guide.md](docs/practitioners-guide.md)
+is the companion reference for turning questions into series, fetches and
+sourced answers. [examples/github-actions/](examples/github-actions/)
 contains a scheduled data-pull workflow.
 
 ## Documentation
 
+- [docs/practitioners-guide.md](docs/practitioners-guide.md) - what you can answer with `bls`: research workflow, recipes, interpreting BLS data, agent protocol
 - [docs/usage.md](docs/usage.md) - full command reference
 - [docs/configuration.md](docs/configuration.md) - environment variables, limits, caching
 - [docs/output-formats.md](docs/output-formats.md) - record schema per format
