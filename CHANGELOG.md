@@ -15,6 +15,21 @@ Releases are cut by the **Bump version** GitHub Actions workflow, which moves th
   wages, state rankings, monitoring), guidance on interpreting BLS data, an
   agent protocol and a question playbook. Linked from the README, the agent
   contract and the example skill.
+- `bls search` understands everyday phrasing: single-word synonyms as tags
+  (`jobs`, `grocery`, `pay`, `hiring`, `salary`) and a new optional catalog
+  field, `aliases`, for whole phrases (`grocery prices`, `rent inflation`,
+  `wage growth`, `cost of living`, `chicago inflation`) matched regardless of
+  word order, plurals and small words. Aliases lend no credit to their single
+  words, so queries for data BLS does not publish (`home prices`) still find
+  nothing ([ADR 0012](docs/adr/0012-catalog-aliases.md)).
+
+### Changed
+
+- `bls search` skips small words ("of", "in", "the", "us") when scoring, so
+  `unemployment in texas` matches like `texas unemployment`.
+- `groceries` now ranks CPI food at home first rather than all food, and the
+  average and median duration of unemployment rank ahead of the count of
+  long-term unemployed.
 
 ## [0.1.0] - 2026-10-24
 ### Added

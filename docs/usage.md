@@ -91,8 +91,10 @@ Offline fuzzy search over the curated series catalog
 | `-n, --limit N` | Max results (default 20, `0` = all). |
 | `--min-score S` | Minimum score 0-100 (default 55). |
 
-Scores: 100 exact id/tag/title; 92-100 every query word present; lower scores
-are fuzzy (typos). Ties keep catalog order, so headline national series come
+Scores: 100 exact id/tag/title or an everyday phrase the catalog knows
+(`grocery prices`, `wage growth`, ignoring word order, plurals and small words
+such as "of" and "in"); 92-100 every query word present; lower scores are fuzzy
+(typos). Ties keep catalog order, so headline national series come
 first. Output columns: `kind, id, title, survey, score, frequency, seasonal, units`.
 
 ## `bls surveys [options]` / `bls surveys show ABBR`

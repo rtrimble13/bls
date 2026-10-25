@@ -116,22 +116,34 @@ Start at the top; each step down covers more series and costs a little more.
 
 ### 3.1 Write queries in BLS vocabulary
 
-The offline search matches words in series titles and curated tags, and
-tolerates typos and word order. It does not understand synonyms, and generic
-words ("prices", "growth", "jobs", "costs") that do not appear in a title
-drag the score down. Name the concept, not the question.
+The offline search matches words in series titles and curated tags, tolerates
+typos and word order, and skips small words such as "of", "in" and "the". The
+curated catalog also recognizes many everyday phrases as a whole, ignoring word
+order and plurals. These score 100:
+
+- **Prices:** `inflation rate`, `cost of living`, `grocery prices`,
+  `food prices`, `gas prices`, `egg prices` (or `price of eggs`),
+  `rent inflation`, `housing costs`, `health care costs`, `car prices`,
+  `used car prices`, `electricity prices`, `regional inflation`,
+  `chicago inflation` (or `inflation in chicago`).
+- **Jobs:** `job growth`, `jobs added`, an industry plus `jobs`
+  (`manufacturing jobs`, `construction jobs`), `hiring`, `quitting`,
+  `open jobs`, `hours worked`.
+- **Unemployment and pay:** `unemployment rate`, `real unemployment rate`
+  (U-6), `wage growth`, `pay`, `salary`, `paycheck`, `worker productivity`.
+- **Places in the catalog:** `texas jobs` or `jobs in texas`,
+  `unemployment in ohio`. Other states are easiest to build from a pattern
+  ([section 3.4](#34-build-ids-from-patterns)).
+
+Beyond these, name the concept rather than asking a question. A word that
+appears in no title or tag still counts against the match.
 
 | You might type | What happens | Type instead |
 | --- | --- | --- |
-| `grocery prices` | no match | `groceries`, `food at home` |
-| `wage growth`, `salary` | no match | `earnings`, `hourly earnings`, `eci` |
-| `rent inflation`, `housing costs` | no match | `rent`, `shelter`, `housing` |
-| `manufacturing jobs` | no match | `manufacturing` |
-| `california jobs` | no match | `california employment`, `california payrolls` |
-| `hiring` | no match | `hires` |
-| `car prices` | no match | `new vehicles`, `used cars` |
-| `pay` | a false hit on total nonfarm employment ("**pay**rolls") at score 75 | `earnings` |
-| `new york inflation` | three New York series (CPI, unemployment, payrolls) tied at 63 | `new york cpi` |
+| `what is inflation`, `how much are eggs` | nothing: the question words count as misses | `inflation`, `egg prices` |
+| `employment rate` | the unemployment rate, at 85, from word overlap | `employment population ratio` or `epop` |
+| `airfare`, `teen jobs`, `wage growth texas` | nothing: not in the curated catalog | find the survey, then `bls series list` or an id pattern ([sections 3.3-3.4](#33-go-beyond-the-curated-catalog-with-bls-series-list)) |
+| `home prices`, `jobless claims` | nothing, correctly: BLS does not publish these | say so ([section 1](#what-bls-is-not-for)) |
 
 Useful exact terms (all score 100): `core cpi`, `core ppi`, `u-6`, `epop`,
 `jolts`, `quits`, `layoffs`, `vacancies`, `eci`, `cola`, `chained cpi`,
@@ -142,7 +154,7 @@ names (`texas`, `ohio`, ...).
 
 | Score | Meaning | What to do |
 | --- | --- | --- |
-| 100 | exact id, tag or title | use it, after choosing among ties |
+| 100 | exact id, tag, title or known everyday phrase | use it, after choosing among ties |
 | ~92-99 | every query word found | almost always right; read the title |
 | below ~90 | partial or fuzzy match | read titles; reformulate; or go to step 3 |
 | nothing | no result above `--min-score` (55) | reformulate, then `bls search ... --kind all` to find the survey |
@@ -931,7 +943,7 @@ these data after the data have been retrieved from BLS.gov."
 **"What's the unemployment rate, and is it higher than a year ago?"**
 
 ```bash
-bls search "unemployment rate" --limit 3 --format json   # LNS14000000, 97.5, SA
+bls search "unemployment rate" --limit 3 --format json   # LNS14000000, 100, SA
 bls latest LNS14000000 --calculations --strict --format json \
   --columns series_id,year,period_name,value,net_change_12,footnotes
 ```
@@ -1035,7 +1047,7 @@ curated catalog unless noted; patterns are explained in
 
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
-| `bls search` finds nothing | generic words, or the series is not in the curated catalog | reformulate ([section 3.1](#31-write-queries-in-bls-vocabulary)); then `--kind all` and `bls series list` |
+| `bls search` finds nothing | question words, or the series is not in the curated catalog | reformulate ([section 3.1](#31-write-queries-in-bls-vocabulary)); then `--kind all` and `bls series list` |
 | Warning `no observations returned for X`, or exit 6 with `--strict` | wrong or discontinued id; range before the series begins; `--frequency` the series does not have | `bls series info X`; check `begin_year`/`end_year` in `bls series list`; widen the range |
 | Exit 2 `unknown column(s)` | `--columns` names a column that was not produced (catalog fields without a key, calculation columns without `--calculations`) | the error lists the available columns |
 | `--catalog` columns missing, with a warning | no `BLS_API_KEY` | set the key, or drop `--catalog` |

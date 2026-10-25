@@ -38,7 +38,8 @@ CUUR0000SA0,2024-03-01,2024,M03,March,monthly,312.332,,false
   `--raw` for the untouched API shape.
 - **Discovery with fuzzy search**: `bls search "core cpi"` works offline
   against a curated catalog of ~130 widely used series and the survey list,
-  tolerating typos and word order; `bls series list --survey CU --query gasoline`
+  tolerating typos and word order and understanding everyday phrases such as
+  `grocery prices` or `jobs in texas`; `bls series list --survey CU --query gasoline`
   searches the *complete* series directory of a survey (BLS flat files);
   `bls popular` and `bls series info` use the live API.
 - **Automation friendly**: API key from the environment only, stable exit

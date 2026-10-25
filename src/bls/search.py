@@ -3,7 +3,9 @@
 Scores are 0-100. An exact (case-insensitive) match on a series id or survey
 abbreviation scores 100; otherwise the best of a few RapidFuzz scorers is used
 so that both typos (``unemploymnt``) and word-order differences (``rate
-unemployment``) are tolerated. See ``docs/adr/0005-fuzzy-search.md``.
+unemployment``) are tolerated. Curated series may also carry *aliases*,
+everyday phrases (``grocery prices``) that match only the query as a whole.
+See ``docs/adr/0005-fuzzy-search.md`` and ``docs/adr/0012-catalog-aliases.md``.
 """
 
 from __future__ import annotations
@@ -40,21 +42,47 @@ class SearchHit:
 
 
 _FUZZY_FLOOR = 72.0  # minimum RapidFuzz ratio for a token to earn fuzzy credit
+_STOP_WORDS = frozenset({"a", "an", "the", "of", "in", "for", "us", "u", "s"})
 
 
-def score_text(query: str, text: str, tags: Sequence[str] = ()) -> float:
-    """Return a 0-100 relevance score of ``text`` (plus optional ``tags``) for ``query``.
+def _singular(word: str) -> str:
+    if len(word) > 4 and word.endswith("ies"):
+        return word[:-3] + "y"
+    if len(word) > 3 and word.endswith("s") and not word.endswith("ss"):
+        return word[:-1]
+    return word
 
-    Each query token earns a credit, and the score is the mean credit:
 
-    * 1.00 - the token equals a tag, or the whole query equals a tag/the text
+def phrase_key(text: str) -> tuple[str, ...]:
+    """Normalise a phrase for alias matching.
+
+    Case, punctuation, word order, simple plurals and a few small words are
+    ignored, so ``price of eggs``, ``egg prices`` and ``Eggs price`` share a key.
+    """
+    words = utils.default_process(text).split()
+    return tuple(sorted(_singular(w) for w in words if w not in _STOP_WORDS))
+
+
+def score_text(
+    query: str, text: str, tags: Sequence[str] = (), aliases: Sequence[str] = ()
+) -> float:
+    """Return a 0-100 relevance score of ``text`` (plus ``tags`` and ``aliases``) for ``query``.
+
+    The whole query scores 100 when it equals the text or a tag, or when its
+    :func:`phrase_key` equals an alias's. Otherwise each query token earns a
+    credit, and the score is the mean credit. Small words ("of", "in", "the",
+    "us", ...) are skipped unless the query has nothing else:
+
+    * 1.00 - the token equals a tag
     * 0.95 - the token is a whole word of the text or of a tag
     * 0.75 - the token is a substring of a word (``employ`` in ``employment``)
     * 0.8 x ratio - the closest word is a fuzzy match (typos), ratio >= 0.72
     * 0.00 - no match
 
-    Exact tag hits therefore outrank incidental word hits, and ties are left to
-    the caller (which keeps the curated catalog order).
+    Alias words earn no per-token credit, so an alias such as ``grocery prices``
+    cannot make ``home prices`` match "Food at home". Exact tag hits outrank
+    incidental word hits, and ties are left to the caller (which keeps the
+    curated catalog order).
     """
     q = utils.default_process(query)
     t = utils.default_process(text)
@@ -63,10 +91,14 @@ def score_text(query: str, text: str, tags: Sequence[str] = ()) -> float:
     norm_tags = [utils.default_process(tag) for tag in tags]
     if q == t or q in norm_tags:
         return 100.0
+    if aliases:
+        key = phrase_key(query)
+        if key and any(key == phrase_key(alias) for alias in aliases):
+            return 100.0
     words = set(t.split())
     tag_words = {w for tag in norm_tags for w in tag.split()}
     credits: list[float] = []
-    for tok in q.split():
+    for tok in [w for w in q.split() if w not in _STOP_WORDS] or q.split():
         if tok in norm_tags:
             credits.append(1.0)
         elif tok in words or tok in tag_words:
@@ -96,7 +128,7 @@ def search_series(
         if survey and entry.survey != survey:
             continue
         exact = entry.series_id == q_upper
-        score = 100.0 if exact else score_text(query, entry.title, entry.tags)
+        score = 100.0 if exact else score_text(query, entry.title, entry.tags, entry.aliases)
         if score >= min_score:
             hits.append(
                 SearchHit(
