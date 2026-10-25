@@ -30,10 +30,13 @@ class CatalogEntry:
     seasonal: str  # "SA" or "NSA"
     units: str = ""
     tags: tuple[str, ...] = field(default_factory=tuple)
+    aliases: tuple[str, ...] = field(default_factory=tuple)  # whole-query everyday phrases
 
     @property
     def search_text(self) -> str:
-        return " ".join([self.series_id, self.title, self.survey, self.seasonal, *self.tags])
+        return " ".join(
+            [self.series_id, self.title, self.survey, self.seasonal, *self.tags, *self.aliases]
+        )
 
     def to_record(self) -> dict[str, Any]:
         return {
@@ -44,6 +47,7 @@ class CatalogEntry:
             "seasonal": self.seasonal,
             "units": self.units,
             "tags": list(self.tags),
+            "aliases": list(self.aliases),
         }
 
 
@@ -90,6 +94,7 @@ def series_catalog() -> list[CatalogEntry]:
                 seasonal=item.get("seasonal", ""),
                 units=item.get("units", ""),
                 tags=tuple(item.get("tags", [])),
+                aliases=tuple(item.get("aliases", [])),
             )
         )
     return entries

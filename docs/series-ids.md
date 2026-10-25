@@ -9,6 +9,7 @@ offers several routes to an id.
 ```bash
 bls search "core cpi"
 bls search unemploymnt rate          # typos tolerated
+bls search "price of eggs"           # everyday phrases, any word order
 bls search "job openings" --kind all # series and surveys
 bls search california --survey LA    # only Local Area Unemployment series
 ```
@@ -17,7 +18,9 @@ Searches a curated catalog of about 130 widely used series (CPI, average
 prices, CPS labour force, CES payrolls and earnings, state unemployment and
 employment, PPI, import/export prices, ECI, JOLTS, productivity). It is
 deliberately small and hand-checked; it is not the universe of BLS series.
-Contributions to `src/bls/data/series_catalog.json` are welcome.
+Contributions to `src/bls/data/series_catalog.json` are welcome; see
+[development.md](development.md#adding-a-series-to-the-curated-catalog) for
+tags and everyday-phrase aliases.
 
 ## 2. Exhaustive per-survey directories: `bls series list`
 

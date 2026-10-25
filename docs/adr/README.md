@@ -17,6 +17,7 @@ decision, numbered in order of acceptance, following the
 | [0009](0009-linux-only-ci.md) | Linux-only GitHub Actions | accepted |
 | [0010](0010-flat-file-discovery.md) | Exhaustive series discovery via BLS flat files | accepted |
 | [0011](0011-stable-exit-codes-and-streams.md) | Stable exit codes; data on stdout, diagnostics on stderr | accepted |
+| [0012](0012-catalog-aliases.md) | Everyday-phrase aliases and small-word skipping in catalog search | accepted |
 
 To add one: copy the template below to `NNNN-short-title.md`, add a row here.
 

@@ -70,6 +70,19 @@ Edit `src/bls/data/series_catalog.json`. Each entry needs `id`, `title`,
 headline series before regional ones within a survey: ties in search score
 keep file order. Verify the id with `bls series info ID` before committing.
 
+Everyday wording goes in one of two places ([ADR 0012](adr/0012-catalog-aliases.md)):
+
+- **`tags`** for single words and established terms (`jobs`, `pay`, `core`,
+  `u-6`). Each word of a tag earns credit on its own, so avoid multi-word tags
+  whose words could pair with unrelated titles.
+- **`aliases`** (optional) for everyday phrases people type whole
+  (`grocery prices`, `wage growth`, `cost of living`). An alias matches only
+  the entire query, ignoring case, word order, plurals and small words such as
+  "of" and "in", and lends no credit to its individual words.
+
+Check a new phrase with `bls search "<phrase>"`, and check that it does not
+create matches for unrelated queries.
+
 ## Style
 
 - Python 3.10+, `from __future__ import annotations`, type hints everywhere
